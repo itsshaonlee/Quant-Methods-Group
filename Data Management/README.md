@@ -125,6 +125,76 @@ drive.mount('/content/drive')
 - **Use Local Anaconda** for: development, debugging, offline work, full environment control
 - **Use Colab** for: GPU/TPU access, collaboration, no-setup-required analysis, sharing results
 
+## Integrated Development Environments (IDEs)
+
+### Visual Studio Code (VS Code)
+**Best for:** General-purpose programming, Python, web development
+
+**Benefits:**
+- Free and open-source
+- Extensive extension marketplace
+- Built-in Git integration
+- Integrated terminal
+- Excellent Python support with extensions
+- Remote development capabilities (SSH, containers, WSL)
+- Jupyter notebook support
+- Lightweight and fast
+
+### Vanilla Jupyter Notebook / JupyterLab
+**Best for:** Data analysis, exploratory work, documentation
+
+**Benefits:**
+- Interactive code execution
+- Inline visualization and markdown
+- Easy to share and reproduce analyses
+- Supports multiple programming languages
+- Great for teaching and presentations
+- JupyterLab offers enhanced interface with tabs and extensions
+- Widely used in data science community
+
+### Spyder
+**Best for:** Scientific computing, MATLAB users transitioning to Python
+
+**Benefits:**
+- Comes with Anaconda distribution
+- MATLAB-like interface
+- Variable explorer for inspecting data
+- Integrated IPython console
+- Built-in debugger
+- Help pane with documentation
+- Designed specifically for data science
+
+### RStudio
+**Best for:** R programming, statistical analysis
+
+**Benefits:**
+- Industry standard for R development
+- Integrated R console, editor, and plots
+- Package management
+- R Markdown support for reproducible reports
+- Git integration
+- Project management features
+- Free and open-source
+
+### Sublime Text / Atom
+**Best for:** Lightweight text editing, quick scripts
+
+**Benefits:**
+- Fast and responsive
+- Minimal resource usage
+- Extensible with packages
+- Multiple cursors and selections
+- Cross-platform
+- Good for quick edits and smaller projects
+- Note: Atom development discontinued in 2022
+
+**Choosing an IDE:**
+- **Beginners:** Start with VS Code or Jupyter Notebook
+- **Data Science:** Jupyter, Spyder, or VS Code with Python extensions
+- **Professional Development:** PyCharm Professional or VS Code
+- **R Users:** RStudio
+- **Quick Scripts:** Sublime Text or VS Code
+
 ## Best Practices
 
 1. **Version Control:** Use Git/GitHub for all code and text-based files
