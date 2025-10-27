@@ -1,1 +1,138 @@
+# Data Management Guide
 
+## Storage Solutions
+
+### GitHub
+GitHub provides version-controlled storage ideal for:
+- Code repositories and scripts
+- Collaborative projects with multiple contributors
+- Tracking changes and maintaining project history
+- Public repositories (free) or private repositories (free with limitations)
+
+**Best for:** Code, documentation, small datasets (<100MB files), configuration files
+
+**Limitations:** Not suitable for large binary files; 100GB repository size limit
+
+### Cloud Storage
+Cloud storage options (Google Drive, Dropbox, OneDrive, etc.) offer:
+- Large file storage capabilities
+- Easy sharing and collaboration
+- Automatic synchronization across devices
+- Integrated with various productivity tools
+
+**Best for:** Large datasets, media files, backups, team file sharing
+
+**Considerations:** Check storage quotas, access permissions, and data privacy policies
+
+## Document Preparation
+
+### Overleaf vs Local LaTeX
+
+**Overleaf (Online LaTeX Editor)**
+- ✅ No installation required
+- ✅ Real-time collaboration
+- ✅ Automatic compilation
+- ✅ Built-in templates and packages
+- ✅ Version history
+- ❌ Requires internet connection
+- ❌ Limited compile time on free tier
+
+**Local LaTeX**
+- ✅ Works offline
+- ✅ Full control over packages and compilation
+- ✅ Faster compilation for large documents
+- ✅ No file size restrictions
+- ❌ Requires installation and setup (TeX Live, MiKTeX)
+- ❌ Manual version control needed
+- ❌ Collaboration requires external tools
+
+**Recommendation:** Use Overleaf for collaborative papers and quick edits; use local LaTeX for thesis-length documents or when offline access is essential.
+
+## Computational Workflows
+
+### Local Python Development with Anaconda
+
+Anaconda is a comprehensive Python distribution and package manager ideal for data science and scientific computing.
+
+**Key Features:**
+- Pre-installed data science packages (NumPy, Pandas, Matplotlib, Scikit-learn, etc.)
+- Conda package manager for easy installation and dependency resolution
+- Environment management for isolated project dependencies
+- Cross-platform support (Windows, macOS, Linux)
+- Includes Jupyter Notebook and JupyterLab
+
+**Environment Management:**
+```bash
+# Create a new environment
+conda create -n myproject python=3.10
+
+# Activate environment
+conda activate myproject
+
+# Install packages
+conda install numpy pandas matplotlib
+
+# Export environment
+conda env export > environment.yml
+
+# Create environment from file
+conda env create -f environment.yml
+```
+
+**Advantages:**
+- ✅ Manages both Python packages and system dependencies
+- ✅ Isolated environments prevent dependency conflicts
+- ✅ Works offline once packages are cached
+- ✅ Easy to replicate environments across machines
+- ✅ Handles complex dependencies better than pip alone
+
+**Anaconda vs Miniconda:**
+- **Anaconda:** Full installation (~3GB) with 250+ pre-installed packages
+- **Miniconda:** Minimal installation (~400MB) with only Python and conda
+
+**Best Practices:**
+- Create separate environments for each project
+- Use `environment.yml` files for reproducibility
+- Regularly update conda: `conda update conda`
+- Consider Miniconda if you want to minimize installation size
+
+### Google Colab with Google Drive Integration
+
+Google Colab integrated with Google Drive enables:
+- Cloud-based Jupyter notebooks with free GPU/TPU access
+- Seamless data access from your Drive storage
+- Collaborative coding and analysis
+- No local setup required
+
+**Mounting Google Drive:**
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+**Use cases:**
+- Machine learning model training
+- Data analysis and visualization
+- Quick prototyping without local compute resources
+- Sharing reproducible analysis notebooks
+
+**Limitations:**
+- Session timeouts (12-hour maximum)
+- Resource limitations on free tier
+- Requires Google account
+
+**Anaconda vs Colab:**
+- **Use Local Anaconda** for: development, debugging, offline work, full environment control
+- **Use Colab** for: GPU/TPU access, collaboration, no-setup-required analysis, sharing results
+
+## Best Practices
+
+1. **Version Control:** Use Git/GitHub for all code and text-based files
+2. **Backup Strategy:** Follow 3-2-1 rule (3 copies, 2 different media, 1 offsite)
+3. **Documentation:** Maintain clear README files and documentation
+4. **File Organization:** Use consistent naming conventions and folder structures
+5. **Access Management:** Set appropriate permissions for shared resources
+
+---
+
+*Last updated: October 2025*
