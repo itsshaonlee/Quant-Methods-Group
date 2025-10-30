@@ -13,6 +13,9 @@ GitHub provides version-controlled storage ideal for:
 
 **Limitations:** Not suitable for large binary files; 100GB repository size limit
 
+Very basic tutorial: https://docs.github.com/en/get-started/start-your-journey/hello-world
+Link to Github Desktop if you choose not to use VSCODE: https://desktop.github.com/download/
+
 ### Cloud Storage
 Cloud storage options (Google Drive, Dropbox, OneDrive, etc.) offer:
 - Large file storage capabilities
