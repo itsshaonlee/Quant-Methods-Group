@@ -1,0 +1,300 @@
+
+---
+title: 'Spatial Data Tools - Working with Spatial Data in R'
+author: "Martina Pardy"
+date: "2025-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This tutorial introduces key workflows for reading, merging, and visualizing and analysing spatial data in R using the packages: **sf**, **terra**, **ggplot2**, **fixest**, **exactextractr** and **tmap**. It shows how to read in spatial data, do spatial joins and plots spatial data.
+
+
+---
+
+## 1. Key Packages
+
+| Package | Purpose | Key Functions |
+|----------|----------|---------------|
+| **sf** | Handling *vector data* (points, lines, polygons) in the Simple Features format | `st_read()`, `st_join()`, `st_transform()`, `st_union()`, `st_as_sf()` |
+| **terra** | Handling *raster* (gridded) and *vector* data efficiently (replacement for `raster`) | `rast()`, `vect()`, `crop()`, `mask()`, `extract()` |
+| **exactextractr** | Fast and accurate extraction of raster values to polygons with area-weighting | `exact_extract()` |
+| **ggplot2** | Visualization of spatial objects via `geom_sf()` and `geom_raster()` | `ggplot()`, `geom_sf()`, `geom_raster()` |
+| **tmap** | Thematic mapping for spatial data with simple syntax | `tm_shape()`, `tm_polygons()`, `tm_layout()` |
+| **fixest** | Fast estimation of econometric models with fixed effects and clustered standard errors | `feols()`, `etable()` |
+
+
+---
+
+
+
+## 2. Reading Spatial Data
+
+### Shapefiles or geopackages using `sf`
+
+st_read() to read in vector data.
+
+```{r vector, echo=TRUE, message = FALSE}
+library(sf)
+library(tibble)
+library(dplyr)
+
+#read in LSOA shapefile
+lsoa_shp <- st_read("/Users/martinapardy/Desktop/uk_datazones_shp/uk_datazones.shp")
+
+#check geometries in shapefile
+st_geometry_type(lsoa_shp) %>% as.data.frame(.) %>% distinct(.) 
+
+#add id column
+lsoa_shp <- rowid_to_column(lsoa_shp, "ID")
+
+# Inspect
+print(lsoa_shp)
+plot(lsoa_shp$geometry)
+
+```
+
+
+### Raster data with `terra`
+
+rast() to read in raster data.
+crop() to remove the part of the raster that is outside the spatial extent. 
+mask() to convert all values outside the map to NAs.
+
+```{r raster, echo=FALSE}
+library(terra)
+
+# Read tmp raster 
+tmp <- rast("/Users/martinapardy/Desktop/Liverpool/imago/temperature/HadUK_Grid_1km_1836_2024_annually_tas/tas_hadukgrid_uk_1km_ann_202301-202312.nc")
+#dataset from here https://www.metoffice.gov.uk/research/climate/maps-and-data/data/haduk-grid/datasets
+
+# Insprect the raster file
+tmp
+summary(tmp$tas)
+
+# Mask to only land values
+tmp_masked <- mask(tmp, tmp)
+
+#plot raster data
+plot(tmp, main="Mean air temperature (°C)")
+
+```
+
+
+### Vector data 
+```{r depri, echo=TRUE}
+library(readr)
+
+# Read deprivation data 
+depriv_england <- read_csv("/Users/martinapardy/Desktop/Indices_of_Multiple_Deprivation_(IMD)_2019_7433421139510038074.csv")
+#data from here https://data.catchmentbasedapproach.org/datasets/45e05901e0a14cca9ab180975e2e8194_0/about
+
+dim(depriv_england)
+head(depriv_england)
+
+#distribution raster data
+summary(depriv_england$IMDScore)
+
+```
+
+
+## 3. Coordinate Reference Systems (CRS)
+
+```{r crs, echo=TRUE, message = FALSE}
+
+crs(tmp)         # Check CRS of raster
+crs(lsoa_shp)
+
+# Reproject raster data to British National Grid (EPSG:27700)
+tmp_reproj <- project(tmp_masked, "EPSG:27700", method = "bilinear", mask = TRUE)
+summary(tmp_reproj$tas)
+
+```
+
+
+## 4. Spatial Join 
+
+```{r spatial join, echo=TRUE}
+
+library(dplyr)
+
+# Option 1: Attribute join using dplyr
+lsoa_depr <- left_join(lsoa_shp, depriv_england, 
+                        by = c("LSOA21C" = "lsoa11cd"))
+
+# Option 2: Attribute join using base R merge()
+lsoa_depr <- merge(lsoa_shp, depriv_england, 
+                   by.x = "LSOA21C", 
+                   by.y = "lsoa11cd",
+                   all.x = TRUE)  # all.x = TRUE is equivalent to left_join
+
+str(lsoa_depr)
+
+# Join points to polygons they fall within: 
+# st_join(stores_points, neighborhood_polygons)
+
+# Find which census tract each crime occurred in: 
+# st_join(crime_points, census_tracts, join = st_within)
+
+# Find overlapping polygons: 
+# st_join(parcels, flood_zones, join = st_intersects)
+
+# Find features within a distance:
+# st_join(schools, parks, join = st_is_within_distance, dist = 500)
+
+# Common spatial predicates for st_join():
+# - st_intersects: features that touch or overlap (default)
+# - st_within: features completely inside
+# - st_overlaps: features that partially overlap
+# - st_is_within_distance: features within specified distance
+
+```
+
+
+## 5. Extract Raster Values to Polygons
+
+```{r extracting raster, echo=TRUE, message = FALSE}
+
+library(exactextractr)
+
+#Annual mean tmp - always computes the coverage fraction of the polygon in each cell
+tmp_extract <- exactextractr::exact_extract(
+  x = tmp_reproj, 
+  y = lsoa_shp, 
+  fun = "mean", 
+  max_cells_in_memory = 366819840, 
+  append_cols = c("dt_zn_c"),
+  progress = FALSE
+)
+
+summary(tmp_extract$mean)
+
+#terra:extract() function as option, but exactextractr is faster for larger rasta data 
+#mean_tmp <- terra::extract(
+#  tmp_reproj, 
+#  vect(lsoa_shp), 
+#  fun = mean, 
+#  na.rm = TRUE,
+#  exact = TRUE # Weight by the fraction of each cell covered by polygon
+#)
+
+
+lsoa_plot <- lsoa_shp %>%
+  left_join(tmp_extract, by = c("dt_zn_c"))
+
+
+```
+
+
+## 6. Visualizing Spatial Data
+
+### (a) Choropleth Map
+
+```{r plots, echo=TRUE, message=FALSE}
+
+library(tmap)
+
+tm_shape(lsoa_plot) +
+  tm_polygons(
+    col = "mean",
+    style = "quantile",
+    n = 5,
+    palette = "-Blues",
+    title = "Mean Temp (°C)",
+    border.col = NA,   # removes polygon borders
+    lwd = 0             # ensures no boundary lines are drawn
+  ) +
+  tm_layout(
+    title = "Mean Temperature by LSOA, 2023",
+    legend.outside = TRUE,
+    frame = FALSE,      # removes outer map frame
+    outer.margins = 0,  # avoids residual grey margins
+    asp = 0             # keeps aspect ratio flexible
+  )
+
+
+```
+
+
+### (b) Using ggplot2
+
+```{r ggplot, echo=TRUE, message=FALSE}
+library(ggplot2)
+library(viridis)
+
+
+ggplot(lsoa_plot) +
+  geom_sf(aes(fill = mean), color = NA) +
+  scale_fill_viridis_c(option = "magma", na.value = "grey90") +
+  labs(
+    title = "LSOA Mean Temperature in 2023",
+    fill = "°C"
+  ) +
+  theme_minimal()
+
+```
+
+
+## 7. Regression Analysis
+
+Once you've worked with spatial data, you'll often want to analyze relationships between variables. Here we use the **fixest** package for efficient regression estimation with the built-in `mtcars` dataset.
+
+
+```{r regression, echo=TRUE, message=FALSE}
+
+library(fixest)
+
+# Run fixed effects regressions
+
+# Load built-in dataset
+data(mtcars)
+head(mtcars)
+
+# Model 1: Effect of weight on fuel efficiency
+m1 <- feols(mpg ~ wt, 
+            data = mtcars)
+
+# Model 2: Multiple predictors
+m2 <- feols(mpg ~ wt + hp, 
+            data = mtcars)
+
+# Model 3: With fixed effects by number of cylinders
+m3 <- feols(mpg ~ wt + hp | cyl, 
+            data = mtcars)
+
+# Model 4: With fixed effects by number of cylinders with SE clustered by gears
+m4 <- feols(mpg ~ wt + hp | cyl, 
+            cluster = ~gear,
+            data = mtcars)
+
+# Display results in a formatted table
+etable(list(m1, m2, m3, m4), 
+       digits = 3, 
+       headers = c("Model 1", "Model 2", "Fixed Effects", "Clustered SE"))
+
+#Export results in tex
+etable(list(m1, m2, m3, m4), 
+       digits = 3,
+       tex = T)
+
+```
+
+## 8. More Tips and resources
+
+Always align CRS before spatial operations.
+
+For large datasets, prefer terra over raster for performance.
+
+More on raster data in R:
+https://www.paulamoraga.com/book-spatial/the-terra-package-for-raster-and-vector-data.html
+https://tmieno2.github.io/R-as-GIS-for-Economists/extracting-values-from-raster-layers-for-vector-data.html 
+https://r.geocompx.org/raster-vector 
+
+More on maps in R:
+https://cengel.github.io/R-spatial/mapping.html
+
+More on fixest:
+https://stata2r.github.io/fixest/
