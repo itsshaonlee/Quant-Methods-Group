@@ -288,6 +288,8 @@ Always check CRS before spatial operations.
 
 Integrating GitHub and RStudio https://happygitwithr.com/rstudio-git-github.html
 
+GitHub Tutorial https://docs.github.com/en/get-started/start-your-journey/hello-world
+
 More on raster data in R:
 https://www.paulamoraga.com/book-spatial/the-terra-package-for-raster-and-vector-data.html
 https://tmieno2.github.io/R-as-GIS-for-Economists/extracting-values-from-raster-layers-for-vector-data.html 
