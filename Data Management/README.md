@@ -69,7 +69,11 @@ conda create -n myproject python=3.10
 # Activate environment
 conda activate myproject
 
+# Add conda-forge channel
+conda config --add channels conda-forge
+
 # Install packages
+# (from anaconda's default package list, and from anaconda 5.0 it will automatically search conda-forge)
 conda install numpy pandas matplotlib
 
 # Export environment
