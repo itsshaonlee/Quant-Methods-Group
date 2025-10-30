@@ -284,9 +284,9 @@ etable(list(m1, m2, m3, m4),
 
 ## 8. More Tips and resources
 
-Always align CRS before spatial operations.
+Always check CRS before spatial operations.
 
-For large datasets, prefer terra over raster for performance.
+Integrating GitHub and RStudio https://happygitwithr.com/rstudio-git-github.html
 
 More on raster data in R:
 https://www.paulamoraga.com/book-spatial/the-terra-package-for-raster-and-vector-data.html
