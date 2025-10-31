@@ -29,6 +29,9 @@ Cloud storage options (Google Drive, Dropbox, OneDrive, etc.) offer:
 
 **Considerations:** Check storage quotas, access permissions, and data privacy policies
 
+Link to Google AI Pro Student Subscription (2TB of storage on Google Drive, access to deep-research Gemini, Free for a year for students, and discounted after that): https://support.google.com/googleone/answer/16417758?hl=en&ref_topic=16477118&sjid=102971625775057763-EU
+
+
 ## Document Preparation
 
 ### Overleaf vs Local LaTeX
