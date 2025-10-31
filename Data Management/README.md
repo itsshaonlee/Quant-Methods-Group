@@ -13,7 +13,7 @@ GitHub provides version-controlled storage ideal for:
 
 **Limitations:** Not suitable for large binary files; 100GB repository size limit
 
-Very basic tutorial on Github: https://docs.github.com/en/get-started/start-your-journey/hello-world
+Github tutorial: https://skills.github.com/#first-day-on-github
 
 Link to Github Desktop: https://desktop.github.com/download/
 You can also integrate Github with your IDE (i.e. Github Extension for vscode, Github for RStudio)
